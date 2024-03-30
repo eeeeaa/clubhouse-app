@@ -1,7 +1,33 @@
 doctype html
-html
+html(lang='en')
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    <!--Import Google Icon Font-->
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
+    <!-- Compiled and minified CSS -->
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css")
+    <!-- Compiled and minified JavaScript -->
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js")
   body
-    block content
+    div(class='container-fluid')
+      nav 
+        div(class="nav-wrapper blue-grey lighten-1")
+          div(class="brand-logo center") Clubhouse
+      div(class='container row')
+        div(class='col s12 m4 l3')
+          block sidebar
+            div(class="collection")
+              a(class="collection-item" href='/post') Home
+              a(class="collection-item" href='/user/login') Login 
+              a(class="collection-item" href='/user/signup') Signup
+              if user
+                div.divider
+                a(class="collection-item" href=user.url_post) My Posts
+                a(class="collection-item" href="/post/create") Create Post
+                a(class="collection-item" href=user.url) Account details
+                a(class="collection-item" href='/user/logout') Logout
+
+        div(class='col s12 m8 l9')
+          block content

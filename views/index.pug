@@ -2,4 +2,16 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p.red-text Note: This website was created for my self-learning experience, please do not input real username and password here!
+  if post_list.length
+    ul(class="collection") 
+      each post in post_list
+        li(class="collection-item")
+          a(class="truncate" href=post.url) #{post.title} 
+          p(class="truncate") #{post.message}
+          if is_member 
+            a(class="truncate" href=user.url) #{user.username} 
+            p(class="truncate") #{post.created_at_formatted}
+
+  else 
+    p There are no categories

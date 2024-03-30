@@ -10,7 +10,8 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
+const userRouter = require("./routes/userRoute");
+const postRouter = require("./routes/postRoute");
 
 const User = require("./models/user");
 
@@ -113,7 +114,8 @@ passport.deserializeUser(async (id, done) => {
 });
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/user", userRouter);
+app.use("/post", postRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

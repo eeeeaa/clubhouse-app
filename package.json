@@ -9,8 +9,8 @@
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www",
     "devwatch": "nodemon --inspect ./bin/www",
-    "serverstart": "DEBUG=express-locallibrary-tutorial:* npm run devstart",
-    "serverwatch": "DEBUG=express-locallibrary-tutorial:* npm run devwatch"
+    "serverstart": "DEBUG=clubhouse-app:* npm run devstart",
+    "serverwatch": "DEBUG=clubhouse-app:* npm run devwatch"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
