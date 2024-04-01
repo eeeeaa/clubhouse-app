@@ -18,15 +18,17 @@ html(lang='en')
       div(class='container row')
         div(class='col s12 m4 l3')
           block sidebar
-            div(class="collection")
+            div(class="collection with-header")
+              div(class="collection-header grey-text darken-3" style="font-size: large;font-weight: 700;") General
               a(class="collection-item" href='/post') Home
               a(class="collection-item" href='/user/login') Login 
               a(class="collection-item" href='/user/signup') Signup
               if user
-                div.divider
-                a(class="collection-item" href=user.url_post) My Posts
+                div(class="divider")
+                div(class="collection-header grey-text darken-3" style="font-size: large;font-weight: 700;") #{user.username}
+                a(class="collection-item" href=user.url+'/post') My Posts
                 a(class="collection-item" href="/post/create") Create Post
-                a(class="collection-item" href=user.url) Account details
+                a(class="collection-item" href=user.url+'/detail') Account details
                 a(class="collection-item" href='/user/logout') Logout
 
         div(class='col s12 m8 l9')

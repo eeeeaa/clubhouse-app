@@ -1,0 +1,21 @@
+extends layout 
+
+block content 
+    div(class='row')
+        div(class="card blue-grey lighten-5")
+            div(class="card-content grey-text darken-4")
+                span(class="card-title") #[strong #{title}:] #[strong #{user.username}]
+                p #[strong Name:] #{user.full_name}
+                p #[strong Member Status:] #{user.member_status}
+                if post_list.length 
+                    ul(class="collection")
+                        each post in post_list
+                            li(class="collection-item")
+                                a(class="truncate" href=post.url) #{post.title} 
+                                p(class="truncate") #{post.message}
+                                p(class="truncate") #{post.created_at_formatted}
+                else 
+                    p This user have no posts.
+            div(class="card-action center-align ")
+                a(class="blue-grey-text darken-2" href=user.url+'/delete') Delete user
+                a(class="blue-grey-text darken-2" href=user.url+'/update') Update user

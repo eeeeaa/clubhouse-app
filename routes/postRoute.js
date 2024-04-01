@@ -4,7 +4,7 @@ const router = express.Router();
 const post_controller = require("../controllers/postController");
 
 router.get("/", post_controller.post_list);
-router.get("/:id", post_controller.post_detail);
+router.get("/:id/detail", post_controller.post_detail);
 
 router.get("/create", post_controller.post_create_get);
 router.post("/create", post_controller.post_create_post);

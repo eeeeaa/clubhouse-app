@@ -1,0 +1,21 @@
+extends layout
+
+block content 
+    h1=title 
+    if user 
+        p You are already logged in.
+    else 
+        div.row
+            form(method="POST").col.s12
+                div.input-field.col.s12 
+                    label(for="username").active Username: 
+                    input(type="text" name="username" placeholder="username" required=true)#username.validate
+                div.input-field.col.s12 
+                    label(for="password").active Password: 
+                    input(type="password" name="password" placeholder="password" required=true)#password.validate
+                button.btn.waves-effect.waves-light(type="submit") Login
+        if errors
+            ul
+                for error in errors
+                    li.red-text!= error.msg
+

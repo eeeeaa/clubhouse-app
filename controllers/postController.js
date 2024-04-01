@@ -35,34 +35,44 @@ exports.post_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.post_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: show post detail, id${req.params.id}`);
+  res.send(`NOT Implemented: show post detail, id: ${req.params.id}`);
 });
 
 //-----------PROTECTED ROUTE-------------//
 
 //CREATE POST
 exports.post_create_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: post create get by user id: ${req.params.id}`);
+  res.send(`NOT Implemented: post create get by user id: ${req.user.username}`);
 });
 
 exports.post_create_post = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: post create post by user id: ${req.params.id}`);
+  res.send(
+    `NOT Implemented: post create post by user id: ${req.user.username}`
+  );
 });
 
 //EDIT POST
 exports.post_update_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: post update get by user id: ${req.params.id}`);
+  res.send(
+    `NOT Implemented: post update get of ${req.params.id} by user id: ${req.user.username}`
+  );
 });
 
 exports.post_update_post = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: post update post by user id: ${req.params.id}`);
+  res.send(
+    `NOT Implemented: post update post of ${req.params.id} by user id: ${req.user.username}`
+  );
 });
 
 //DELETE POST
 exports.post_delete_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: post delete get by user id: ${req.params.id}`);
+  res.send(
+    `NOT Implemented: post delete get of ${req.params.id} by user id: ${req.user.username}`
+  );
 });
 
 exports.post_delete_post = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: post delete post by user id: ${req.params.id}`);
+  res.send(
+    `NOT Implemented: post delete post of ${req.params.id} by user id: ${req.user.username}`
+  );
 });

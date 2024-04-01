@@ -16,6 +16,8 @@ delete
 */
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const { getHash } = require("../utils/passwordUtils");
+const passport = require("passport");
 
 const User = require("../models/user");
 const Post = require("../models/post");
@@ -24,20 +26,94 @@ const Post = require("../models/post");
 
 //SIGN_UP - sign-up user and add to database
 exports.user_signup_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT Implemented: user signup get");
+  res.render("signup", {
+    title: "Sign up",
+    status_list: ["Guest", "Member", "Admin"],
+  });
 });
 
-exports.user_signup_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT Implemented: user signup post");
-});
+exports.user_signup_post = [
+  body("first_name").trim().escape(),
+  body("last_name").trim().escape(),
+  body("username")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("username must not be empty")
+    .escape(),
+  body("password")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("password must not be empty")
+    .escape(),
+  body("password_confirm")
+    .custom((value, { req }) => {
+      return value === req.body.password;
+    })
+    .withMessage("password does not match"),
+  asyncHandler(async (req, res, next) => {
+    console.log(req.body.password_confirm);
+    const err = validationResult(req);
+    const hash = await getHash(req.body.password);
+    const user = new User({
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      username: req.body.username,
+      password: hash,
+      member_status: req.body.member_status,
+    });
+
+    if (!err.isEmpty()) {
+      res.render("signup", {
+        title: "Sign up",
+        status_list: ["Guest", "Member", "Admin"],
+        errors: err.array(),
+      });
+    } else {
+      user.save();
+      res.redirect(user.url + "/detail");
+    }
+  }),
+];
 
 //LOG_IN - log-in user
 exports.user_login_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user login get`);
+  res.render("login", { title: "Login", user: req.user });
 });
 
-exports.user_login_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT Implemented: user login post");
+exports.user_login_post = [
+  body("username")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("username must not be empty")
+    .escape(),
+  body("password")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("password must not be empty")
+    .escape(),
+  (req, res, next) => {
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+      res.render("login", {
+        title: "Login",
+        user: req.user,
+        errors: err.array(),
+      });
+    } else {
+      next();
+    }
+  },
+  passport.authenticate("local", {
+    failureRedirect: "/user/login-failure",
+    successRedirect: "/post",
+  }),
+];
+
+exports.user_login_failure = asyncHandler(async (req, res, next) => {
+  res.render("loginfailed", {
+    title: "Login failed",
+    message: "wrong username or password",
+  });
 });
 
 //LOG_OUT
@@ -52,7 +128,20 @@ exports.user_logout = asyncHandler(async (req, res, next) => {
 
 //USER_DETAIL - view user detail
 exports.user_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user detail user id: ${req.params.id}`);
+  const [user, allPosts] = await Promise.all([
+    User.findById(req.params.id).exec(),
+    Post.find({ user: req.params.id }).sort({ created_at: 1 }).exec(),
+  ]);
+  if (user == null) {
+    const err = new Error("User not found");
+    err.status = 404;
+    return next(err);
+  }
+  res.render("user_detail", {
+    title: "Account detail",
+    user: user,
+    post_list: allPosts,
+  });
 });
 
 //-----------PROTECTED ROUTE-------------//

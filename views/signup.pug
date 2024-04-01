@@ -1,0 +1,32 @@
+extends layout
+
+block content 
+    h1=title 
+    div.row
+        form(method="POST").col.s12
+            div.input-field.col.s6
+                label(for="first_name").active First name: 
+                input(type="text" name="first_name" placeholder="first_name")#first_name.validate
+            div.input-field.col.s6
+                label(for="last_name").active Last name: 
+                input(type="text" name="last_name" placeholder="last_name")#last_name.validate
+            div.input-field.col.s12 
+                label(for="username").active Username: 
+                input(type="text" name="username" placeholder="username" required=true)#username.validate
+            div.input-field.col.s12 
+                label(for="password").active Password: 
+                input(type="password" name="password" placeholder="password" required=true)#password.validate
+            div.input-field.col.s12 
+                label(for="password_confirm").active Confirm password: 
+                input(type="password" name="password_confirm" placeholder="password" required=true)#password_confirm.validate
+            div.input-field.col.s12
+                label.active(for="member_status") Status: 
+                select#member_status.browser-default(name='member_status' required)
+                    option(value='' disabled) --Please select your status--
+                    for status in status_list
+                        option(value=status) #{status}
+            button.btn.waves-effect.waves-light(type="submit") Sign-up
+    if errors
+        ul
+            for error in errors
+                li.red-text!= error.msg

@@ -18,10 +18,6 @@ UserSchema.virtual("url").get(function () {
   return `/user/${this._id}`;
 });
 
-UserSchema.virtual("url_post").get(function () {
-  return `/user/${this._id}/post`;
-});
-
 UserSchema.virtual("full_name").get(function () {
   const first = undefined === this.first_name ? "" : this.first_name;
   const last = undefined === this.last_name ? "" : this.last_name;
