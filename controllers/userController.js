@@ -18,6 +18,7 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const { getHash } = require("../utils/passwordUtils");
 const passport = require("passport");
+const { verifyMember, verifyAdmin } = require("./authController");
 
 const User = require("../models/user");
 const Post = require("../models/post");
@@ -29,7 +30,7 @@ exports.user_signup_get = asyncHandler(async (req, res, next) => {
   res.render("user_signup", {
     title: "Sign up",
     status_list: ["Guest", "Member", "Admin"],
-    user: req.user,
+    current_user: req.user,
   });
 });
 
@@ -68,7 +69,7 @@ exports.user_signup_post = [
         title: "Sign up",
         status_list: ["Guest", "Member", "Admin"],
         errors: err.array(),
-        user: req.user,
+        current_user: req.user,
       });
     } else {
       user.save();
@@ -79,7 +80,7 @@ exports.user_signup_post = [
 
 //LOG_IN - log-in user
 exports.user_login_get = asyncHandler(async (req, res, next) => {
-  res.render("user_login", { title: "Login", user: req.user });
+  res.render("user_login", { title: "Login", current_user: req.user });
 });
 
 exports.user_login_post = [
@@ -98,7 +99,7 @@ exports.user_login_post = [
     if (!err.isEmpty()) {
       res.render("user_login", {
         title: "Login",
-        user: req.user,
+        current_user: req.user,
         errors: err.array(),
       });
     } else {
@@ -115,7 +116,7 @@ exports.user_login_failure = asyncHandler(async (req, res, next) => {
   res.render("user_loginfailed", {
     title: "Login failed",
     message: "wrong username or password",
-    user: req.user,
+    current_user: req.user,
   });
 });
 
@@ -130,48 +131,78 @@ exports.user_logout = asyncHandler(async (req, res, next) => {
 });
 
 //USER_DETAIL - view user detail
-exports.user_detail = asyncHandler(async (req, res, next) => {
-  const [user, allPosts] = await Promise.all([
-    User.findById(req.params.id).exec(),
-    Post.find({ user: req.params.id }).sort({ created_at: 1 }).exec(),
-  ]);
-  if (user == null) {
-    const err = new Error("User not found");
-    err.status = 404;
-    return next(err);
-  }
-  res.render("user_detail", {
-    title: "Account detail",
-    user: user,
-    post_list: allPosts,
-  });
-});
+exports.user_detail = [
+  verifyMember,
+  asyncHandler(async (req, res, next) => {
+    const [user, allPosts] = await Promise.all([
+      User.findById(req.params.id).exec(),
+      Post.find({ user: req.params.id }).sort({ created_at: 1 }).exec(),
+    ]);
+    if (user == null) {
+      const err = new Error("User not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    //hide actions if not your own detail and not an admin
+    const shouldShowAction =
+      req.params.id === req.user._id.toString() || req.user.is_admin;
+
+    res.render("user_detail", {
+      title: "Account detail",
+      user: user,
+      post_list: allPosts,
+      show_action: shouldShowAction,
+      current_user: req.user,
+    });
+  }),
+];
 
 //-----------PROTECTED ROUTE-------------//
 
 //USER_UPDATE
-exports.user_update_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user update get user id: ${req.params.id}`);
-});
+exports.user_update_get = [
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    res.send(`NOT Implemented: user update get user id: ${req.params.id}`);
+  }),
+];
 
-exports.user_update_post = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user update post user id: ${req.params.id}`);
-});
+exports.user_update_post = [
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    res.send(`NOT Implemented: user update post user id: ${req.params.id}`);
+  }),
+];
 
 //USER_DELETE
-exports.user_delete_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user delete get user id: ${req.params.id}`);
-});
+exports.user_delete_get = [
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    res.send(`NOT Implemented: user delete get user id: ${req.params.id}`);
+  }),
+];
 
-exports.user_delete_post = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user delete post user id: ${req.params.id}`);
-});
+exports.user_delete_post = [
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    res.send(`NOT Implemented: user delete post user id: ${req.params.id}`);
+  }),
+];
 
 //APPLY FOR MEMBERSHIP
-exports.user_change_role_get = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user change role get user id: ${req.params.id}`);
-});
+exports.user_change_role_get = [
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    res.send(`NOT Implemented: user change role get user id: ${req.params.id}`);
+  }),
+];
 
-exports.user_change_role_post = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user change role post user id: ${req.params.id}`);
-});
+exports.user_change_role_post = [
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    res.send(
+      `NOT Implemented: user change role post user id: ${req.params.id}`
+    );
+  }),
+];

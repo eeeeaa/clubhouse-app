@@ -2,7 +2,7 @@ extends layout
 
 block content 
     h1=title 
-    if user 
+    if current_user 
         p You are already logged in.
     else 
         div.row

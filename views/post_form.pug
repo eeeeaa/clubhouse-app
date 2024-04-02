@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    h1=title
+
+    form(method="POST").col.s12
+        div.row.center-align
+            div.input-field.col.s12
+                i.small.material-icons.prefix edit
+                label.active(for='title') Title: 
+                input#title.validate(type='text' placeholder='title' name='title' required value=(undefined===post ? '' : post.title) )
+            div.input-field.col.s12
+                i.small.material-icons.prefix edit
+                label.active(for='message') Message: 
+                textarea#message.materialize-textarea(placeholder='message' name='message' required)= undefined===post ? '' : post.message
+            button.btn.waves-effect.teal.accent-4(type="submit") Submit
+                i.material-icons.right send
+    if errors
+        ul
+            for error in errors
+                li!= error.msg

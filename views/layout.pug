@@ -23,11 +23,11 @@ html(lang='en')
               a(class="collection-item" href='/post') Home
               a(class="collection-item" href='/user/login') Login 
               a(class="collection-item" href='/user/signup') Signup
-              if user
+              if current_user
                 div(class="divider")
-                div(class="collection-header grey-text darken-3" style="font-size: large;font-weight: 700;") User: #{user.username}
+                div(class="collection-header grey-text darken-3" style="font-size: large;font-weight: 700;") User: #{current_user.username}
                 a(class="collection-item" href="/post/create") Create Post
-                a(class="collection-item" href=user.url+'/detail') Account details
+                a(class="collection-item" href=current_user.url+'/detail') Account details
                 a(class="collection-item" href='/user/logout') Logout
 
         div(class='col s12 m8 l9')

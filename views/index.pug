@@ -6,11 +6,15 @@ block content
     ul(class="collection") 
       each post in post_list
         li(class="collection-item")
-          a(class="truncate" href=post.url) #{post.title} 
+          a(class="truncate" href=post.url) #[strong #{post.title}]
           p(class="truncate") #{post.message}
-          if is_member 
-            a(class="truncate" href=user.url) #{user.username} 
-            p(class="truncate") #{post.created_at_formatted}
+          if current_user === undefined ? false : current_user.is_member
+            p
+            | author:
+            a(href=post.user.url+'/detail')  #{post.user.username}
+            br
+            | created at:
+            | #{post.created_at_formatted}
 
   else 
     p There are no posts
