@@ -2,7 +2,6 @@ extends layout
 
 block content
   h1= title
-  p.red-text Note: This website was created for my self-learning experience, please do not input real username and password here!
   if post_list.length
     ul(class="collection") 
       each post in post_list
@@ -14,4 +13,4 @@ block content
             p(class="truncate") #{post.created_at_formatted}
 
   else 
-    p There are no categories
+    p There are no posts

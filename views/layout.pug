@@ -25,8 +25,7 @@ html(lang='en')
               a(class="collection-item" href='/user/signup') Signup
               if user
                 div(class="divider")
-                div(class="collection-header grey-text darken-3" style="font-size: large;font-weight: 700;") #{user.username}
-                a(class="collection-item" href=user.url+'/post') My Posts
+                div(class="collection-header grey-text darken-3" style="font-size: large;font-weight: 700;") User: #{user.username}
                 a(class="collection-item" href="/post/create") Create Post
                 a(class="collection-item" href=user.url+'/detail') Account details
                 a(class="collection-item" href='/user/logout') Logout

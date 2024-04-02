@@ -4,9 +4,11 @@ block content
     div(class='row')
         div(class="card blue-grey lighten-5")
             div(class="card-content grey-text darken-4")
-                span(class="card-title") #[strong #{title}:] #[strong #{user.username}]
-                p #[strong Name:] #{user.full_name}
+                span(class="card-title") #[strong #{title}:]
+                p #[strong Username:] #{user.username}
+                p #[strong Full name:] #{user.full_name}
                 p #[strong Member Status:] #{user.member_status}
+                p #[strong Posts:] 
                 if post_list.length 
                     ul(class="collection")
                         each post in post_list

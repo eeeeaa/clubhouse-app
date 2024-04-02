@@ -26,9 +26,10 @@ const Post = require("../models/post");
 
 //SIGN_UP - sign-up user and add to database
 exports.user_signup_get = asyncHandler(async (req, res, next) => {
-  res.render("signup", {
+  res.render("user_signup", {
     title: "Sign up",
     status_list: ["Guest", "Member", "Admin"],
+    user: req.user,
   });
 });
 
@@ -63,10 +64,11 @@ exports.user_signup_post = [
     });
 
     if (!err.isEmpty()) {
-      res.render("signup", {
+      res.render("user_signup", {
         title: "Sign up",
         status_list: ["Guest", "Member", "Admin"],
         errors: err.array(),
+        user: req.user,
       });
     } else {
       user.save();
@@ -77,7 +79,7 @@ exports.user_signup_post = [
 
 //LOG_IN - log-in user
 exports.user_login_get = asyncHandler(async (req, res, next) => {
-  res.render("login", { title: "Login", user: req.user });
+  res.render("user_login", { title: "Login", user: req.user });
 });
 
 exports.user_login_post = [
@@ -94,7 +96,7 @@ exports.user_login_post = [
   (req, res, next) => {
     const err = validationResult(req);
     if (!err.isEmpty()) {
-      res.render("login", {
+      res.render("user_login", {
         title: "Login",
         user: req.user,
         errors: err.array(),
@@ -110,9 +112,10 @@ exports.user_login_post = [
 ];
 
 exports.user_login_failure = asyncHandler(async (req, res, next) => {
-  res.render("loginfailed", {
+  res.render("user_loginfailed", {
     title: "Login failed",
     message: "wrong username or password",
+    user: req.user,
   });
 });
 
@@ -145,11 +148,6 @@ exports.user_detail = asyncHandler(async (req, res, next) => {
 });
 
 //-----------PROTECTED ROUTE-------------//
-
-//USER_POSTS
-exports.user_post_list = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: user posts of user id: ${req.params.id}`);
-});
 
 //USER_UPDATE
 exports.user_update_get = asyncHandler(async (req, res, next) => {
