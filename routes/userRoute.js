@@ -21,7 +21,7 @@ router.post("/:id/update", user_controller.user_update_post);
 router.get("/:id/delete", user_controller.user_delete_get);
 router.post("/:id/delete", user_controller.user_delete_post);
 
-router.get("/:id/role-change", user_controller.user_change_role_get);
-router.post("/:id/role-change", user_controller.user_change_role_post);
+router.get("/role-change", user_controller.user_change_role_get);
+router.post("/role-change", user_controller.user_change_role_post);
 
 module.exports = router;

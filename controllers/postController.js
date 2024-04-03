@@ -5,9 +5,9 @@ create
         -> need to be logged in to create a post
 read 
     -> all posts can be view publicly on the home page
-    -> post's author and timestamp are hidden for non-members
+    -> post's author and timestamp are hidden for non-members (except your own)
 update
-    -> user can edit their own posts
+    -> user can edit their own posts -> TODO
 delete
     -> user can delete their own posts
     -> admin can also delete other user posts
@@ -110,7 +110,7 @@ exports.post_create_post = [
   }),
 ];
 
-//EDIT POST
+//EDIT POST (TODO)
 exports.post_update_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {

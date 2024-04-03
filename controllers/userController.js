@@ -5,14 +5,13 @@ create
 read
     -> user can login
     -> user can view their own user detail
-        -> show username, first name, last name
-        -> need membership to view other user detail
+    -> need membership to view other user detail
 update
-    -> user can change their own first and last name
+    -> user can change their own first and last name -> TODO
     -> user can join the club and update their member status
     -> user can apply for admin position and update their member status
 delete
-    -> user can delete their own account
+    -> user can delete their own account -> TODO
 */
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
@@ -23,13 +22,17 @@ const { verifyMember, verifyAdmin, verifyAuth } = require("./authController");
 const User = require("../models/user");
 const Post = require("../models/post");
 
+const statusList = ["Guest", "Member", "Admin"];
+
+require("dotenv").config();
+
 //-----------PUBLIC ROUTE-------------//
 
 //SIGN_UP - sign-up user and add to database
 exports.user_signup_get = asyncHandler(async (req, res, next) => {
   res.render("user_signup", {
     title: "Sign up",
-    status_list: ["Guest", "Member", "Admin"],
+    status_list: statusList,
     current_user: req.user,
   });
 });
@@ -67,7 +70,7 @@ exports.user_signup_post = [
     if (!err.isEmpty()) {
       res.render("user_signup", {
         title: "Sign up",
-        status_list: ["Guest", "Member", "Admin"],
+        status_list: statusList,
         errors: err.array(),
         current_user: req.user,
       });
@@ -175,7 +178,7 @@ exports.user_detail = [
 
 //-----------PROTECTED ROUTE-------------//
 
-//USER_UPDATE
+//USER_UPDATE (TODO)
 exports.user_update_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {
@@ -190,7 +193,7 @@ exports.user_update_post = [
   }),
 ];
 
-//USER_DELETE
+//USER_DELETE (TODO)
 exports.user_delete_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {
@@ -207,17 +210,66 @@ exports.user_delete_post = [
 
 //APPLY FOR MEMBERSHIP
 exports.user_change_role_get = [
-  verifyAdmin,
+  verifyAuth,
   asyncHandler(async (req, res, next) => {
-    res.send(`NOT Implemented: user change role get user id: ${req.params.id}`);
+    const applyList = statusList.filter(
+      (value) => value !== req.user.member_status
+    );
+
+    res.render("user_change_role", {
+      title: "Change Status",
+      status_list: applyList,
+      current_user: req.user,
+    });
   }),
 ];
 
 exports.user_change_role_post = [
-  verifyAdmin,
+  verifyAuth,
+  body("passcode")
+    .custom((value, { req }) => {
+      switch (req.body.member_status) {
+        case "Guest": {
+          return true;
+        }
+        case "Member": {
+          return value === process.env.MEMBER_PASSCODE;
+        }
+        case "Admin": {
+          return value === process.env.ADMIN_PASSCODE;
+        }
+        default: {
+          return false;
+        }
+      }
+    })
+    .withMessage("Wrong passcode!")
+    .escape(),
   asyncHandler(async (req, res, next) => {
-    res.send(
-      `NOT Implemented: user change role post user id: ${req.params.id}`
-    );
+    const errors = validationResult(req);
+
+    const update = {
+      member_status: req.body.member_status,
+    };
+
+    if (!errors.isEmpty()) {
+      const applyList = statusList.filter(
+        (value) => value !== req.user.member_status
+      );
+
+      res.render("user_change_role", {
+        title: "Change Status",
+        status_list: applyList,
+        current_user: req.user,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id.toString(),
+        update,
+        {}
+      );
+      res.redirect(updatedUser.url + "/detail");
+    }
   }),
 ];

@@ -1,0 +1,21 @@
+extends layout
+
+block content 
+    h1=title
+    p enter the correct passcode for the status you wish to apply (leave blank for Guest)
+    div.row
+        form(method="POST").col.s12
+            div.input-field.col.s12 
+                label(for="passcode").active Role-Change Passcode: 
+                input(type="text" name="passcode" placeholder="passcode")#passcode.validate
+            div.input-field.col.s12
+                label.active(for="member_status") Status: 
+                select#member_status.browser-default(name='member_status' required)
+                    option(value='' disabled) --Please select status you wish to apply--
+                    for status in status_list
+                        option(value=status) #{status}
+            button.btn.waves-effect.waves-light(type="submit") Sign-up
+    if errors
+        ul
+            for error in errors
+                li.red-text!= error.msg
