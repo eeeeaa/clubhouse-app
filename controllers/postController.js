@@ -110,7 +110,7 @@ exports.post_create_post = [
   }),
 ];
 
-//EDIT POST (TODO)
+//EDIT POST - only owner and admin can edit (TODO)
 exports.post_update_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {
@@ -125,7 +125,7 @@ exports.post_update_post = [
   }),
 ];
 
-//DELETE POST
+//DELETE POST - only owner and admin can delete
 exports.post_delete_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {

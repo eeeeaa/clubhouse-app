@@ -178,7 +178,7 @@ exports.user_detail = [
 
 //-----------PROTECTED ROUTE-------------//
 
-//USER_UPDATE (TODO)
+//USER_UPDATE - only owner and admin can edit (TODO)
 exports.user_update_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {
@@ -193,7 +193,7 @@ exports.user_update_post = [
   }),
 ];
 
-//USER_DELETE (TODO)
+//USER_DELETE - only owner and admin can delete (TODO)
 exports.user_delete_get = [
   verifyAdmin,
   asyncHandler(async (req, res, next) => {
