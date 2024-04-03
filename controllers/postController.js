@@ -33,9 +33,40 @@ exports.post_list = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.post_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT Implemented: show post detail, id: ${req.params.id}`);
-});
+exports.post_detail = [
+  verifyAuth,
+  asyncHandler(async (req, res, next) => {
+    const post = await Post.findById(req.params.id).populate("user").exec();
+
+    if (post === null) {
+      const err = new Error("Post not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    //hide actions if not your own post and not an admin
+    let shouldShowAction = false;
+    let shouldShowMemberDetail = false;
+
+    if (req.isAuthenticated()) {
+      shouldShowAction =
+        post.user._id.toString() === req.user._id.toString() ||
+        req.user.is_admin;
+
+      shouldShowMemberDetail =
+        post.user._id.toString() === req.user._id.toString() ||
+        req.user.is_member;
+    }
+
+    res.render("post_detail", {
+      title: "Post detail",
+      post: post,
+      show_action: shouldShowAction,
+      show_member_detail: shouldShowMemberDetail,
+      current_user: req.user,
+    });
+  }),
+];
 
 //-----------PROTECTED ROUTE-------------//
 

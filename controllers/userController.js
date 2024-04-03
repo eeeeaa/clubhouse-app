@@ -4,21 +4,21 @@ create
     -> user can sign up
 read
     -> user can login
-    -> user can view their own and other user detail
+    -> user can view their own user detail
         -> show username, first name, last name
         -> need membership to view other user detail
 update
-    -> user can change first and last name
+    -> user can change their own first and last name
     -> user can join the club and update their member status
     -> user can apply for admin position and update their member status
 delete
-    -> user can delete their account
+    -> user can delete their own account
 */
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const { getHash } = require("../utils/passwordUtils");
 const passport = require("passport");
-const { verifyMember, verifyAdmin } = require("./authController");
+const { verifyMember, verifyAdmin, verifyAuth } = require("./authController");
 
 const User = require("../models/user");
 const Post = require("../models/post");
@@ -132,7 +132,18 @@ exports.user_logout = asyncHandler(async (req, res, next) => {
 
 //USER_DETAIL - view user detail
 exports.user_detail = [
-  verifyMember,
+  verifyAuth,
+  (req, res, next) => {
+    if (req.params.id === req.user._id.toString() || req.user.is_member) {
+      next();
+    } else {
+      return res.render("user_unauthorized", {
+        title: "Access Denied",
+        message: "You need member status or above to access this page",
+        current_user: req.user,
+      });
+    }
+  },
   asyncHandler(async (req, res, next) => {
     const [user, allPosts] = await Promise.all([
       User.findById(req.params.id).exec(),
@@ -145,8 +156,12 @@ exports.user_detail = [
     }
 
     //hide actions if not your own detail and not an admin
-    const shouldShowAction =
-      req.params.id === req.user._id.toString() || req.user.is_admin;
+    let shouldShowAction = false;
+
+    if (req.isAuthenticated()) {
+      shouldShowAction =
+        req.params.id === req.user._id.toString() || req.user.is_admin;
+    }
 
     res.render("user_detail", {
       title: "Account detail",

@@ -1,54 +1,31 @@
-/*
-Guest 
--> can write/edit/delete their own post
--> can view their own and other's account detail
-Member
--> all above
--> can see author, date of posts
-Admin
--> all above
--> can edit/delete all posts of others
--> can edit/delete other's account detail
-*/
-
+//verify that user is logged in
 exports.verifyAuth = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    next();
-  } else {
-    res.redirect("/user/login");
-  }
+  if (!req.isAuthenticated()) return res.redirect("/user/login");
+  return next();
 };
 
+//verify that user is logged in and is a member or above
 exports.verifyMember = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    if (req.params.id === req.user._id.toString()) {
-      //can view/edit your own stuff
-      next();
-    } else {
-      if (req.user.is_member) {
-        next();
-      } else {
-        res.redirect("/user/login");
-      }
-    }
-  } else {
-    res.redirect("/user/login");
+  if (!req.isAuthenticated()) return res.redirect("/user/login");
+  if (!req.user.is_member) {
+    return res.render("user_unauthorized", {
+      title: "Access Denied",
+      message: "You need member status or above to access this page",
+      current_user: req.user,
+    });
   }
+  return next();
 };
 
+//verify that user is logged in and is an admin
 exports.verifyAdmin = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    if (req.params.id === req.user._id.toString()) {
-      //can view/edit your own stuff
-      next();
-    } else {
-      if (req.user.is_admin) {
-        next();
-      } else {
-        res.redirect("/user/login");
-      }
-    }
-  } else {
-    res.redirect("/user/login");
+  if (!req.isAuthenticated()) return res.redirect("/user/login");
+  if (!req.user.is_admin) {
+    return res.render("user_unauthorized", {
+      title: "Access Denied",
+      message: "You need admin status to access this page",
+      current_user: req.user,
+    });
   }
+  return next();
 };

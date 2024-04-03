@@ -6,7 +6,10 @@ block content
     ul(class="collection") 
       each post in post_list
         li(class="collection-item")
-          a(class="truncate" href=post.url) #[strong #{post.title}]
+          a(href=post.url+'/detail') #[strong #{post.title}]
+          if current_user 
+            if current_user._id.toString() === post.user._id.toString()
+              |  #[string (you)]
           p(class="truncate") #{post.message}
           if current_user === undefined ? false : current_user.is_member
             p
