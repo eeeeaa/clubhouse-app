@@ -127,14 +127,65 @@ exports.post_update_post = [
 
 //DELETE POST - only owner and admin can delete
 exports.post_delete_get = [
-  verifyAdmin,
+  verifyAuth,
   asyncHandler(async (req, res, next) => {
-    res.send(`NOT Implemented: post delete get of ${req.params.id}`);
+    const post = await Post.findById(req.params.id, "user").exec();
+    if (
+      post.user._id.toString() === req.user._id.toString() ||
+      req.user.is_admin
+    ) {
+      next();
+    } else {
+      return res.render("user_unauthorized", {
+        title: "Access Denied",
+        message: "You need admin status to access this page",
+        current_user: req.user,
+      });
+    }
+  }),
+  asyncHandler(async (req, res, next) => {
+    const post = await Post.findById(req.params.id)
+      .populate("user", "username")
+      .exec();
+
+    if (post === null) {
+      const err = new Error("Post not found");
+      err.status = 404;
+      return next(err);
+    }
+    res.render("post_delete", {
+      title: "Delete Post",
+      post: post,
+      current_user: req.user,
+    });
   }),
 ];
+
 exports.post_delete_post = [
-  verifyAdmin,
+  verifyAuth,
   asyncHandler(async (req, res, next) => {
-    res.send(`NOT Implemented: post delete post of ${req.params.id}`);
+    const post = await Post.findById(req.params.id, "user").exec();
+    if (
+      post.user._id.toString() === req.user._id.toString() ||
+      req.user.is_admin
+    ) {
+      next();
+    } else {
+      return res.render("user_unauthorized", {
+        title: "Access Denied",
+        message: "You need admin status to access this page",
+        current_user: req.user,
+      });
+    }
+  }),
+  asyncHandler(async (req, res, next) => {
+    const post = await Post.findById(req.params.id).exec();
+
+    if (post === null) {
+      res.redirect("/post");
+    } else {
+      await Post.findByIdAndDelete(req.params.id);
+      res.redirect("/post");
+    }
   }),
 ];
